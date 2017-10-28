@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            div.width_and_float {
+                width:128px;
+                float:left;
+            }
+            
+            div.box_width_and_float {
+                width:180px;
+                float:left;
+            }
+            
+            div.large_width_and_float {
+                width:360px;
+                float:left;
+            }
+            
+            div.clear_email {
+                clear:left;
+                margin-top: 30px;
+                margin-bottom:10px;
+            }
+            
+            div.clear_submit {
+                clear:left;
+            }
+            
+            div.bottom_margin {
+                margin-bottom:10px;
+            }
+            
+            input.hide_religion {
+                display:none;
+            }
+            
+            input.show_religion {
+                display:block;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h2>Form</h2>
+
+        <form>
+            <div>
+                <div name="_name"> 
+                    <div class="width_and_float"> Name </div>
+                    <div> <input type="text" id="iN" name="name_input"> </div>
+                </div>
+                <br>
+                <div name="_birth_date">
+                    <div class="width_and_float"> Birth Date </div>
+                    <div class="box_width_and_float"> <input name="_birth_date_input" id="iBD" type="text"> </div>
+                    <div> DD-MM-YYYY </div>
+                </div>
+                <br>
+                <div name="_religion">
+                    <div class="width_and_float"> Religion </div>
+                    <div class="large_width_and_float">
+                        <div> <input id="rh" name="_religion_input" type="radio" onchange="toggleOtherReligionTextbox()"> Hindu </div>
+                        <div> <input id="rm" name="_religion_input" type="radio" onchange="toggleOtherReligionTextbox()"> Muslim </div>
+                        <div> 
+                            <div class="width_and_float"> <input id="ro" name="_religion_input" type="radio" onchange="toggleOtherReligionTextbox()"> Other </div>
+                            <div> <input class="hide_religion" type="text" id="rtb" name="_religion_input_other"> </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="clear_email" name="email_div">
+                    <div class="width_and_float"> Email </div>
+                    <div class="box_width_and_float" id="ediv"> 
+                        <div class="bottom_margin"> <input type="text" name="email_input_1"> </div>
+                    </div>
+                    <div> <input type="button" onclick="AddMore()" name="add_more_button" value="Add More"> </div>
+                </div>
+                <br>
+                <div class="clear_submit">
+                    <input type="button" value="Submit" onclick="SubmitFormContents()">
+                </div>
+            </div>
+        </form>
+
+        <script type="text/javascript">
+            var counter = 1;
+        
+            function toggleOtherReligionTextbox() {
+                var religion_text_box = document.getElementById("rtb");
+                var other_religion_radio = document.getElementById("ro");
+                if (other_religion_radio.checked) {
+                    religion_text_box.classList.remove('hide_religion')
+                    religion_text_box.classList.add('show_religion')
+                } else {
+                    religion_text_box.classList.remove('show_religion')
+                    religion_text_box.classList.add('hide_religion')
+                }
+            }
+            
+            function AddMore() {
+                var email_div = document.getElementById("ediv");
+                var new_div = document.createElement("div");
+                new_div.setAttribute("class", "bottom_margin")
+                var element = document.createElement("input");
+                element.setAttribute("type", "text");
+                ++counter;
+                str_counter = counter.toString();
+                element_name = "email_input_".concat(str_counter);
+                element.setAttribute("name", element_name);
+                new_div.appendChild(element);
+                ediv.appendChild(new_div);
+            }
+            
+            function ValidateInput(nameStr, birthdateStr, religionStr, EmailStrs) {
+                var return_val=true;
+                return return_val;
+            }
+            
+            function SubmitFormContents() {
+                var nameStr = document.getElementById("iN").value;
+                var birthdateStr = document.getElementById("iBD").value;
+                var religionStr;
+                if (document.getElementById("rh").checked) {
+                    religionStr = "Hindu";
+                } else if (document.getElementById("rm").checked) {
+                    religionStr = "Muslim";
+                } else {
+                    religionStr = document.getElementById("ro").value;
+                }
+                var i;
+                var EmailStrs = [];
+                for (i=1; i <= counter; i++) {
+                    ename = "email_input_".concat(i.toString())
+                    EmailStrs.push(document.getElementsByName(ename)[0].value)
+                }
+                
+                isValid = ValidateInput(nameStr, birthdateStr, religionStr, EmailStrs);
+                if (!isValid) {
+                    alert("Invalid input")
+                } else {
+                    var json_post = {};
+                    json_post.name = nameStr;
+                    json_post.birthdate = birthdateStr;
+                    json_post.religion = religionStr;
+                    json_post.email = EmailStrs;
+                    json_string = JSON.stringify(json_post);
+                    console.log(json_string);
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.open("POST", "myurl");
+                    xhttp.send(json_string);
+                }
+                // e.preventDefault();
+            }
+        </script>
+
+    </body>
+</html>
